@@ -38,7 +38,7 @@ const counting = function (arr, operatorTmp) {
 	}
 }
 // Считываем выражение
-let str = '( 2 * ( 3 + 5 ) ) * 10 - 17 * 2'.split(' ');
+let str = userDataEntries;//'( 2 * ( 3 + 5 ) ) * 10 - 17 * 2'.split(' ');
 let arrayExit = [];
 let operatorArrTmp = [];
 let operatorTmp;
@@ -127,5 +127,5 @@ while (arrayExit.length !== 1) {
 	arrayExit = arrayTemp;
 	arrayTemp = [];
 }
-fs.appendFileSync('txt/out.txt', `\n Сумма произведения: ${exitNum}`);
+fs.appendFileSync('txt/output.txt', `\n Сумма произведения: ${arrayExit}`);
 console.log(arrayExit);
