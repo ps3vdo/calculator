@@ -1,8 +1,8 @@
-//const fs = require('fs');
-//const userDataEntries = fs.readFileSync('txt/user.txt')
-//	.toString()
-//	.replace('\n', '')
-//	.split(' ')
+const fs = require('fs');
+const userDataEntries = fs.readFileSync('txt/input.txt')
+	.toString()
+	.replace('\n', '')
+	.split(' ')
 //цифра?
 const isNumber = (i) => (i >= 0 && i <= 99999);
 //оператор?
@@ -45,8 +45,9 @@ let operatorTmp;
 let numTmp = [];
 let testNum = [];
 let exitNum = [];
+let arrayTemp = [];
 
-
+{//обратная польская нотация
 for (let i of str) {
 	if (isNumber(i)) {
 		arrayExit.push(i);
@@ -94,8 +95,9 @@ while (operatorArrTmp.length !== 0) {
 operatorTmp = 0;
 str = arrayExit.join(' ');
 
-//fs.appendFileSync('txt/out.txt', `\n${str}`);
+fs.appendFileSync('txt/output.txt', `\n Обратная польская нотация: ${str}`);
 console.log(str);
+}
 
 while (arrayExit.length !== 1) {
 	for (let j of arrayExit) {
@@ -104,26 +106,26 @@ while (arrayExit.length !== 1) {
 		}
 		else if (isOperator(j) && numTmp.length === 2) { 
 			operatorTmp = j;
-			arrayExit.push(counting(numTmp, operatorTmp));
+			arrayTemp.push(counting(numTmp, operatorTmp));
 			operatorTmp = 0;
 			numTmp = [];
-			arrayExit.shift();
-			arrayExit.shift();
-			arrayExit.shift();
 		}
 		else if (isNumber(j) && numTmp.length === 2) {
-			arrayExit.push(numTmp.shift());
+			arrayTemp.push(numTmp.shift());
 			numTmp.push(j);
-			arrayExit.shift();
 		}
 		else if (isOperator(j) && numTmp.length === 1) {
-			arrayExit.push(numTmp.pop())
+			arrayTemp.push(numTmp.pop())
 			operatorTmp = j;
-			arrayExit.push(operatorTmp);
+			arrayTemp.push(operatorTmp);
 			operatorTmp = 0;
-			arrayExit.shift();
+		}
+		else if (isOperator(j) && numTmp.length === 0) {
+			arrayTemp.push(j);
 		}
 	}
+	arrayExit = arrayTemp;
+	arrayTemp = [];
 }
-//fs.appendFileSync('txt/out.txt', `\n${exitNum}`);
+fs.appendFileSync('txt/out.txt', `\n Сумма произведения: ${exitNum}`);
 console.log(arrayExit);
