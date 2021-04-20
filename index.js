@@ -1,21 +1,14 @@
-
-const fs = require('fs');
-const userDataEntries = fs.readFileSync('txt/user.txt')
-	.toString()
-	.replace('\n', '')
-	.split(' ')
+//const fs = require('fs');
+//const userDataEntries = fs.readFileSync('txt/user.txt')
+//	.toString()
+//	.replace('\n', '')
+//	.split(' ')
 //цифра?
-let isNumber = function (i) {
-	if (i >= 0 && i <= 99999) return true;
-	else return false
-}
+const isNumber = (i) => (i >= 0 && i <= 99999);
 //оператор?
-let isOperator = function (i) {
-	if (i === '/' || i === '*' || i === '+' || i === '-' || i === ')' || i === '(') return true;
-	else return false
-}
+const isOperator = (i) => (i === '/' || i === '*' || i === '+' || i === '-' || i === ')' || i === '(');
 //приоритет оператора
-let prOp = function (i) {
+const prOp = function (i) {
 	switch (i) {
 		case '*':
 		case '/':
@@ -30,12 +23,9 @@ let prOp = function (i) {
 	}
 }
 //Проверка на скобки
-let opBracket = function (i) {
-	if (i === ')') return true;
-	else return false;
-}
+const isOperatorBracket = (i) => (i === ')');
 //вычисление выражения	
-let counting = function (arr, operatorTmp) {
+const counting = function (arr, operatorTmp) {
 	switch (operatorTmp) {
 		case '+':
 			return +arr[0] + +arr[1];
@@ -48,9 +38,9 @@ let counting = function (arr, operatorTmp) {
 	}
 }
 // Считываем выражение
-let str = userDataEntries; //prompt('Введите выражение', '( 3 + 5 ) * 10 - 17 * 2').split(' ');
-let reversString = [];
-let op = [];
+let str = '( 2 * ( 3 + 5 ) ) * 10 - 17 * 2'.split(' ');
+let arrayExit = [];
+let operatorArrTmp = [];
 let operatorTmp;
 let numTmp = [];
 let testNum = [];
@@ -59,69 +49,81 @@ let exitNum = [];
 
 for (let i of str) {
 	if (isNumber(i)) {
-		reversString.push(i);
+		arrayExit.push(i);
 	}
-	if (isOperator(i)) {
-		if (op.length === 0) op.push(i);
-		else if (opBracket(i)) {
-			while (op.lenght !== 0) {
-				if (op.indexOf('(') == 0) {
-					op.shift()
+	else if (isOperator(i)) {
+		if (operatorArrTmp.length === 0) operatorArrTmp.push(i);
+		else if (isOperatorBracket(i)) {
+			while (operatorTmp !== '(') {
+				operatorTmp = operatorArrTmp.pop()
+				if (operatorTmp === '(') {
+					operatorTmp = 0;
+					break;
 				}
-				else if (op.length !== 0 && op[op.lenght - 1] !== "(") {
-					reversString.push(op.pop());
+				else {
+					arrayExit.push(operatorTmp);
+					operatorTmp = 0;
 				}
-				else break;
 			}
 		}
-		else if (op.indexOf('(') == -1) {
-			operatorTmp = op.pop();
+		else if (operatorArrTmp.indexOf('(') == -1) {
+			operatorTmp = operatorArrTmp.pop();
 			if (prOp(operatorTmp) > prOp(i)) {
-				reversString.push(operatorTmp);
-				op.push(i);
+				arrayExit.push(operatorTmp);
+				operatorArrTmp.push(i);
+				operatorTmp = 0;
 			}
 			else if (prOp(operatorTmp) === prOp(i)) {
-				op.push(operatorTmp);
-				op.push(i);
+				operatorArrTmp.push(operatorTmp);
+				operatorArrTmp.push(i);
+				operatorTmp = 0;
 			}
 			else {
-				op.push(operatorTmp);
-				op.push(i);
+				operatorArrTmp.push(operatorTmp);
+				operatorArrTmp.push(i);
+				operatorTmp = 0;
 
 			}
 		}
-		else op.push(i);
+		else operatorArrTmp.push(i);
 	}
 }
-while (op.length !== 0) {
-	reversString.push(op.pop());
+while (operatorArrTmp.length !== 0) {
+	arrayExit.push(operatorArrTmp.pop());
 }
 operatorTmp = 0;
-str = reversString.join(' ');
+str = arrayExit.join(' ');
 
-fs.appendFileSync('txt/out.txt', `\n${str}`);
+//fs.appendFileSync('txt/out.txt', `\n${str}`);
+console.log(str);
 
-for (let j of reversString) {
-	if (isNumber(j) && operatorTmp === 0) {
-		numTmp.push(j)
-	}
-	else if (isOperator(j) && numTmp.length === 2) {
-		operatorTmp = j;
-		testNum.push(counting(numTmp, operatorTmp));
-		operatorTmp = 0;
-		numTmp = [];
-	}
-	else if (isOperator(j) && numTmp.length === 1) {
-		operatorTmp = j;
-		numTmp.push(testNum.pop())
-		testNum.push(counting(numTmp, operatorTmp));
-		operatorTmp = 0;
-		numTmp = [];
-	}
-	else if (testNum.length === 2) { //нужно допилить и передавать в основной массив...
-		operatorTmp = j;
-		exitNum.push(counting(testNum, operatorTmp));
+while (arrayExit.length !== 1) {
+	for (let j of arrayExit) {
+		if (isNumber(j) && operatorTmp === 0 && numTmp.length < 2) { 
+			numTmp.push(j);
+		}
+		else if (isOperator(j) && numTmp.length === 2) { 
+			operatorTmp = j;
+			arrayExit.push(counting(numTmp, operatorTmp));
+			operatorTmp = 0;
+			numTmp = [];
+			arrayExit.shift();
+			arrayExit.shift();
+			arrayExit.shift();
+		}
+		else if (isNumber(j) && numTmp.length === 2) {
+			arrayExit.push(numTmp.shift());
+			numTmp.push(j);
+			arrayExit.shift();
+		}
+		else if (isOperator(j) && numTmp.length === 1) {
+			arrayExit.push(numTmp.pop())
+			operatorTmp = j;
+			arrayExit.push(operatorTmp);
+			operatorTmp = 0;
+			arrayExit.shift();
+		}
 	}
 }
-fs.appendFileSync('txt/out.txt', `\n${exitNum}`);
-console.log(exitNum)
+//fs.appendFileSync('txt/out.txt', `\n${exitNum}`);
+console.log(arrayExit);
