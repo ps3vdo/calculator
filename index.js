@@ -1,8 +1,5 @@
 const fs = require('fs');
-const userDataEntries = fs.readFileSync('txt/input.txt')
-	.toString()
-	.replace('\n', '')
-	.split(' ')
+const userDataEntries = fs.readFileSync('txt/input.txt').toString().replace('\n', '').split(' ');
 //цифра?
 const isNumber = (i) => (i >= 0 && i <= 99999);
 //оператор?
@@ -38,7 +35,7 @@ const counting = function (arr, operatorTmp) {
 	}
 }
 // Считываем выражение
-let str = userDataEntries;//'( 2 * ( 3 + 5 ) ) * 10 - 17 * 2'.split(' ');
+let str = userDataEntries;//'3+7*(2*3+3+4)'.split('');
 let arrayExit = [];
 let operatorArrTmp = [];
 let operatorTmp;
@@ -46,12 +43,17 @@ let numTmp = [];
 let testNum = [];
 let exitNum = [];
 let arrayTemp = [];
-
-{//обратная польская нотация
-for (let i of str) {
-	if (isNumber(i)) {
-		arrayExit.push(i);
+/*for (let x of str){
+	if (isNumber(x)){
+		if (arrayExit.length === 0) arrayTemp.push(x);
+		else if ()
 	}
+	else arrayExit.push(x);
+}*/
+try {//обратная польская нотация
+for (let i of str) {
+	if (i === ' ') throw 'Удалите пробел в строке. Операция остановлена';
+	else if (isNumber(i)) arrayExit.push(i);
 	else if (isOperator(i)) {
 		if (operatorArrTmp.length === 0) operatorArrTmp.push(i);
 		else if (isOperatorBracket(i)) {
@@ -67,14 +69,15 @@ for (let i of str) {
 				}
 			}
 		}
-		else if (operatorArrTmp.indexOf('(') == -1) {
+		else if( i === '(') operatorArrTmp.push(i);
+		else {
 			operatorTmp = operatorArrTmp.pop();
 			if (prOp(operatorTmp) > prOp(i)) {
 				arrayExit.push(operatorTmp);
 				operatorArrTmp.push(i);
 				operatorTmp = 0;
 			}
-			else if (prOp(operatorTmp) === prOp(i)) {
+			else if (prOp(operatorTmp) < prOp(i)) {
 				operatorArrTmp.push(operatorTmp);
 				operatorArrTmp.push(i);
 				operatorTmp = 0;
@@ -83,22 +86,18 @@ for (let i of str) {
 				operatorArrTmp.push(operatorTmp);
 				operatorArrTmp.push(i);
 				operatorTmp = 0;
-
 			}
 		}
-		else operatorArrTmp.push(i);
 	}
+	else throw 'Символ не опознан. Операция остановлена';	
 }
 while (operatorArrTmp.length !== 0) {
 	arrayExit.push(operatorArrTmp.pop());
 }
 operatorTmp = 0;
 str = arrayExit.join(' ');
-
 fs.appendFileSync('txt/output.txt', `\n Обратная польская нотация: ${str}`);
 console.log(str);
-}
-
 while (arrayExit.length !== 1) {
 	for (let j of arrayExit) {
 		if (isNumber(j) && operatorTmp === 0 && numTmp.length < 2) { 
@@ -129,3 +128,6 @@ while (arrayExit.length !== 1) {
 }
 fs.appendFileSync('txt/output.txt', `\n Сумма произведения: ${arrayExit}`);
 console.log(arrayExit);
+}catch (e) {
+  console.error(e);
+}
