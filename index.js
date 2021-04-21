@@ -1,12 +1,5 @@
 const fs = require('fs');
-const promise = new Promise((resolve, reject) => {
-	setTimeout(()=>{
-		const userDataEntries = fs.readFileSync('txt/input.txt').toString().replace('\n', '').split(' ');
-		resolve()
-	}, 1000)
-	setTimeout(() => reject(new Error("Ошибка загрузки файла")), 2000);
-})
-
+const userDataEntries = fs.readFileSync('txt/input.txt').toString().replace('\n', '').split(' ');
 //цифра?
 const isNumber = (i) => (i >= 0 && i <= 99999);
 //оператор?
@@ -42,7 +35,7 @@ const counting = function (arr, operatorTmp) {
 	}
 }
 // Считываем выражение
-let str = userDataEntries.split('');//'3+7*(2*3+3+4)'.split('');
+let str = userDataEntries;//'3+7*(2*3+3+4)'.split('');
 let arrayExit = [];
 let operatorArrTmp = [];
 let operatorTmp;
@@ -57,84 +50,84 @@ let arrayTemp = [];
 	}
 	else arrayExit.push(x);
 }*/
-try {//обратная польская нотация
-for (let i of str) {
-	if (i === ' ') throw 'Удалите пробел в строке. Операция остановлена';
-	else if (isNumber(i)) arrayExit.push(i);
-	else if (isOperator(i)) {
-		if (operatorArrTmp.length === 0) operatorArrTmp.push(i);
-		else if (isOperatorBracket(i)) {
-			while (operatorTmp !== '(') {
-				operatorTmp = operatorArrTmp.pop()
-				if (operatorTmp === '(') {
+try {
+	for (let i of str) {
+		if (i === ' ') throw 'Удалите пробел в строке. Операция остановлена';
+		else if (isNumber(i)) arrayExit.push(i);
+		else if (isOperator(i)) {
+			if (operatorArrTmp.length === 0) operatorArrTmp.push(i);
+			else if (isOperatorBracket(i)) {
+				while (operatorTmp !== '(') {
+					operatorTmp = operatorArrTmp.pop()
+					if (operatorTmp === '(') {
+						operatorTmp = 0;
+						break;
+					}
+					else {
+						arrayExit.push(operatorTmp);
+						operatorTmp = 0;
+					}
+				}
+			}
+			else if (i === '(') operatorArrTmp.push(i);
+			else {
+				operatorTmp = operatorArrTmp.pop();
+				if (prOp(operatorTmp) > prOp(i)) {
+					arrayExit.push(operatorTmp);
+					operatorArrTmp.push(i);
 					operatorTmp = 0;
-					break;
+				}
+				else if (prOp(operatorTmp) < prOp(i)) {
+					operatorArrTmp.push(operatorTmp);
+					operatorArrTmp.push(i);
+					operatorTmp = 0;
 				}
 				else {
-					arrayExit.push(operatorTmp);
+					operatorArrTmp.push(operatorTmp);
+					operatorArrTmp.push(i);
 					operatorTmp = 0;
 				}
 			}
 		}
-		else if( i === '(') operatorArrTmp.push(i);
-		else {
-			operatorTmp = operatorArrTmp.pop();
-			if (prOp(operatorTmp) > prOp(i)) {
-				arrayExit.push(operatorTmp);
-				operatorArrTmp.push(i);
-				operatorTmp = 0;
-			}
-			else if (prOp(operatorTmp) < prOp(i)) {
-				operatorArrTmp.push(operatorTmp);
-				operatorArrTmp.push(i);
-				operatorTmp = 0;
-			}
-			else {
-				operatorArrTmp.push(operatorTmp);
-				operatorArrTmp.push(i);
-				operatorTmp = 0;
-			}
-		}
+		else throw 'Символ не опознан. Операция остановлена';
 	}
-	else throw 'Символ не опознан. Операция остановлена';	
-}
-while (operatorArrTmp.length !== 0) {
-	arrayExit.push(operatorArrTmp.pop());
-}
-operatorTmp = 0;
-str = arrayExit.join(' ');
-fs.appendFileSync('txt/output.txt', `\n Обратная польская нотация: ${str}`);
-console.log(str);
-while (arrayExit.length !== 1) {
-	for (let j of arrayExit) {
-		if (isNumber(j) && operatorTmp === 0 && numTmp.length < 2) { 
-			numTmp.push(j);
-		}
-		else if (isOperator(j) && numTmp.length === 2) { 
-			operatorTmp = j;
-			arrayTemp.push(counting(numTmp, operatorTmp));
-			operatorTmp = 0;
-			numTmp = [];
-		}
-		else if (isNumber(j) && numTmp.length === 2) {
-			arrayTemp.push(numTmp.shift());
-			numTmp.push(j);
-		}
-		else if (isOperator(j) && numTmp.length === 1) {
-			arrayTemp.push(numTmp.pop())
-			operatorTmp = j;
-			arrayTemp.push(operatorTmp);
-			operatorTmp = 0;
-		}
-		else if (isOperator(j) && numTmp.length === 0) {
-			arrayTemp.push(j);
-		}
+	while (operatorArrTmp.length !== 0) {
+		arrayExit.push(operatorArrTmp.pop());
 	}
-	arrayExit = arrayTemp;
-	arrayTemp = [];
-}
-fs.appendFileSync('txt/output.txt', `\n Сумма произведения: ${arrayExit}`);
-console.log(arrayExit);
-}catch (e) {
-  console.error(e);
+	operatorTmp = 0;
+	str = arrayExit.join(' ');
+	fs.appendFileSync('txt/output.txt', `\n Обратная польская нотация: ${str}`);
+	console.log(str);
+	while (arrayExit.length !== 1) {
+		for (let j of arrayExit) {
+			if (isNumber(j) && operatorTmp === 0 && numTmp.length < 2) {
+				numTmp.push(j);
+			}
+			else if (isOperator(j) && numTmp.length === 2) {
+				operatorTmp = j;
+				arrayTemp.push(counting(numTmp, operatorTmp));
+				operatorTmp = 0;
+				numTmp = [];
+			}
+			else if (isNumber(j) && numTmp.length === 2) {
+				arrayTemp.push(numTmp.shift());
+				numTmp.push(j);
+			}
+			else if (isOperator(j) && numTmp.length === 1) {
+				arrayTemp.push(numTmp.pop())
+				operatorTmp = j;
+				arrayTemp.push(operatorTmp);
+				operatorTmp = 0;
+			}
+			else if (isOperator(j) && numTmp.length === 0) {
+				arrayTemp.push(j);
+			}
+		}
+		arrayExit = arrayTemp;
+		arrayTemp = [];
+	}
+	fs.appendFileSync('txt/output.txt', `\n Сумма произведения: ${arrayExit}`);
+	console.log(arrayExit);
+} catch (e) {
+	console.error(e);
 }
