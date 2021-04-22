@@ -35,7 +35,8 @@ const counting = function (arr, operatorTmp) {
 	}
 }
 // Считываем выражение
-let str = userDataEntries.split('')
+
+let str = userDataEntries;
 let arrayExit = [];
 let operatorArrTmp = [];
 let operatorTmp;
@@ -43,9 +44,10 @@ let numTmp = [];
 let testNum = [];
 let exitNum = [];
 let arrayTemp = [];
+
 try {
 	for (let i of str) {
-		if (!isNumber(i) && !isOperator(i)) throw 'Символ не опознан. Операция остановлена';
+		if (!isNumber(i) && !isOperator(i)|| i === ' ') throw 'Символ не опознан. Операция остановлена';
 		else if (isNumber(i)) arrayExit.push(i);
 		else if (isOperator(i)) {
 			if (operatorArrTmp.length === 0) operatorArrTmp.push(i);
@@ -91,6 +93,7 @@ try {
 	str = arrayExit.join(' ');
 	fs.appendFileSync('txt/output.txt', `\n Обратная польская нотация: ${str}`);
 	console.log(str);
+	
 	while (arrayExit.length !== 1) {
 		for (let j of arrayExit) {
 			if (isNumber(j) && operatorTmp === 0 && numTmp.length < 2) {
@@ -115,6 +118,7 @@ try {
 			else if (isOperator(j) && numTmp.length === 0) {
 				arrayTemp.push(j);
 			}
+			else if (!isNumber(i) && !isOperator(i)) throw 'Символ не опознан. Операция остановлена';
 		}
 		arrayExit = arrayTemp;
 		arrayTemp = [];
