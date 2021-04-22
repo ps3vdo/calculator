@@ -78,7 +78,7 @@ try {
 					operatorTmp = 0;
 				}
 				else {
-					operatorArrTmp.push(operatorTmp);
+					arrayExit.push(operatorTmp);
 					operatorArrTmp.push(i);
 					operatorTmp = 0;
 				}
