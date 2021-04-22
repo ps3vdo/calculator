@@ -1,7 +1,7 @@
 const fs = require('fs');
 const userDataEntries = fs.readFileSync('txt/input.txt').toString().replace('\n', '').split(' ');
 //цифра?
-const isNumber = (i) => (i >= 0 && i <= 99999);
+const isNumber = (i) => (i >= -999999999 && i <= 999999999);
 //оператор?
 const isOperator = (i) => (i === '/' || i === '*' || i === '+' || i === '-' || i === ')' || i === '(');
 //приоритет оператора
@@ -35,7 +35,7 @@ const counting = function (arr, operatorTmp) {
 	}
 }
 // Считываем выражение
-let str = userDataEntries;//'3+7*(2*3+3+4)'.split('');
+let str = userDataEntries.split('')
 let arrayExit = [];
 let operatorArrTmp = [];
 let operatorTmp;
@@ -43,16 +43,9 @@ let numTmp = [];
 let testNum = [];
 let exitNum = [];
 let arrayTemp = [];
-/*for (let x of str){
-	if (isNumber(x)){
-		if (arrayExit.length === 0) arrayTemp.push(x);
-		else if ()
-	}
-	else arrayExit.push(x);
-}*/
 try {
 	for (let i of str) {
-		if (i === ' ') throw 'Удалите пробел в строке. Операция остановлена';
+		if (!isNumber(i) && !isOperator(i)) throw 'Символ не опознан. Операция остановлена';
 		else if (isNumber(i)) arrayExit.push(i);
 		else if (isOperator(i)) {
 			if (operatorArrTmp.length === 0) operatorArrTmp.push(i);
@@ -92,7 +85,7 @@ try {
 		else throw 'Символ не опознан. Операция остановлена';
 	}
 	while (operatorArrTmp.length !== 0) {
-		arrayExit.push(operatorArrTmp.pop());
+		arrayExit.push(operatorArrTmp.shift());
 	}
 	operatorTmp = 0;
 	str = arrayExit.join(' ');
