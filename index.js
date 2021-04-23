@@ -1,5 +1,5 @@
 const fs = require('fs');
-const userDataEntries = fs.readFileSync('txt/input.txt').toString().replace('\n', '').split(' ');
+const stringCout = fs.readFileSync('txt/input.txt').toString().replace('\n', '').split(' ');
 //цифра?
 const isNumber = (i) => (i >= -999999999 && i <= 999999999);
 //оператор?
@@ -36,24 +36,20 @@ const counting = function (arr, operatorTmp) {
 }
 // Считываем выражение
 
-let str = userDataEntries;
 let arrayExit = [];
-let operatorArrTmp = [];
 let operatorTmp;
 let numTmp = [];
-let testNum = [];
-let exitNum = [];
 let arrayTemp = [];
 
 try {
-	for (let i of str) {
+	for (let i of stringCout) {
 		if (!isNumber(i) && !isOperator(i)|| i === ' ') throw 'Символ не опознан. Операция остановлена';
 		else if (isNumber(i)) arrayExit.push(i);
 		else if (isOperator(i)) {
-			if (operatorArrTmp.length === 0) operatorArrTmp.push(i);
+			if (arrayTemp.length === 0) arrayTemp.push(i);
 			else if (isOperatorBracket(i)) {
 				while (operatorTmp !== '(') {
-					operatorTmp = operatorArrTmp.pop()
+					operatorTmp = arrayTemp.pop()
 					if (operatorTmp === '(') {
 						operatorTmp = 0;
 						break;
@@ -64,35 +60,35 @@ try {
 					}
 				}
 			}
-			else if (i === '(') operatorArrTmp.push(i);
+			else if (i === '(') arrayTemp.push(i);
 			else {
-				operatorTmp = operatorArrTmp.pop();
+				operatorTmp = arrayTemp.pop();
 				if (prOp(operatorTmp) > prOp(i)) {
 					arrayExit.push(operatorTmp);
-					operatorArrTmp.push(i);
+					arrayTemp.push(i);
 					operatorTmp = 0;
 				}
 				else if (prOp(operatorTmp) < prOp(i)) {
-					operatorArrTmp.push(operatorTmp);
-					operatorArrTmp.push(i);
+					arrayTemp.push(operatorTmp);
+					arrayTemp.push(i);
 					operatorTmp = 0;
 				}
 				else {
 					arrayExit.push(operatorTmp);
-					operatorArrTmp.push(i);
+					arrayTemp.push(i);
 					operatorTmp = 0;
 				}
 			}
 		}
 		else throw 'Символ не опознан. Операция остановлена';
 	}
-	while (operatorArrTmp.length !== 0) {
-		arrayExit.push(operatorArrTmp.shift());
+	while (arrayTemp.length !== 0) {
+		arrayExit.push(arrayTemp.pop());
 	}
 	operatorTmp = 0;
-	str = arrayExit.join(' ');
-	fs.appendFileSync('txt/output.txt', `\n Обратная польская нотация: ${str}`);
-	console.log(str);
+	stringCout = arrayExit.join(' ');
+	fs.appendFileSync('txt/output.txt', `\n Обратная польская нотация: ${stringCout}`);
+	console.log(stringCout);
 	
 	while (arrayExit.length !== 1) {
 		for (let j of arrayExit) {
