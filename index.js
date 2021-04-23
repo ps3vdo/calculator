@@ -1,5 +1,5 @@
 const fs = require('fs');
-let stringCout = '3 + 5 + 10 * 20'.split(' ');//fs.readFileSync('txt/input.txt').toString().replace('\n', '').split(' ');
+let stringCout = fs.readFileSync('txt/input.txt').toString().replace('\n', '').split(' ');
 //цифра?
 const isNumber = (i) => (i >= -999999999 && i <= 999999999);
 //оператор?
