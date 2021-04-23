@@ -1,5 +1,5 @@
 const fs = require('fs');
-const stringCout = fs.readFileSync('txt/input.txt').toString().replace('\n', '').split(' ');
+let stringCout = '3 + 5 + 10 * 20'.split(' ');//fs.readFileSync('txt/input.txt').toString().replace('\n', '').split(' ');
 //цифра?
 const isNumber = (i) => (i >= -999999999 && i <= 999999999);
 //оператор?
@@ -9,13 +9,9 @@ const prOp = function (i) {
 	switch (i) {
 		case '*':
 		case '/':
-			return 3
+			return 1
 		case '+':
 		case '-':
-			return 2
-		case '(':
-			return 1
-		case ')':
 			return 0
 	}
 }
